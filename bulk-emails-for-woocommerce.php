@@ -209,7 +209,7 @@ class WPO_BEWC {
 			$type = sanitize_text_field( $_REQUEST['wpo_bewc'] );
 			switch ( $type ) {
 				case 'error':
-					$message = __( 'An error ocurred when try to process your bulk emails request!', 'bulk-emails-for-woocommerce' );
+					$message = __( 'An error occurred while processing your bulk email sending request!', 'bulk-emails-for-woocommerce' );
 					break;
 				case 'success':
 					$message = __( 'Your bulk emails are now scheduled to be delivered as soon as possible!', 'bulk-emails-for-woocommerce' );
