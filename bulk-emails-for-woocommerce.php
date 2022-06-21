@@ -32,7 +32,7 @@ class WPO_BEWC {
 		add_action( 'init', array( $this, 'load_textdomain' ), 10, 1 );
 		add_filter( 'bulk_actions-edit-shop_order', array( $this, 'bulk_actions' ), 16 );
 		add_action( 'admin_footer', array( $this, 'email_selector' ) );
-		add_action( 'wp_ajax_wpo-bew-send-emails', array( $this, 'ajax_send_emails' ) );
+		add_action( 'wp_ajax_wpo-bew-send-email', array( $this, 'ajax_send_email' ) );
 		add_action( 'wpo_bewc_schedule_email_sending', array( $this, 'send_order_email' ), 10, 2 );
 		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
 		add_action( 'admin_notices', array( $this, 'need_wc' ) );
@@ -43,7 +43,7 @@ class WPO_BEWC {
 	}
 
 	public function bulk_actions( $actions ) {
-		$actions['wpo_bewc_send_emails'] = __( 'Send emails', 'bulk-emails-for-woocommerce' );
+		$actions['wpo_bewc_send_email'] = __( 'Send email', 'bulk-emails-for-woocommerce' );
 		return $actions;
 	}
 
@@ -76,7 +76,7 @@ class WPO_BEWC {
 						e.preventDefault();
 						let actionSelected = $( this ).val();
 
-						if ( actionSelected == 'wpo_bewc_send_emails' ) {
+						if ( actionSelected == 'wpo_bewc_send_email' ) {
 							$( '#wpo_bewc_email_selection' )
 								.show()
 								.insertAfter( '#wpbody-content .tablenav-pages' )
@@ -99,7 +99,7 @@ class WPO_BEWC {
 						let actionSelected = $( this ).attr( 'id' ).substr( 2 );
 						let action         = $( 'select[name="'+actionSelected+'"]' ).val();
 
-						if ( action == 'wpo_bewc_send_emails' ) {
+						if ( action == 'wpo_bewc_send_email' ) {
 							e.preventDefault();
 
 							// Get array of checked orders (order_ids)
@@ -115,7 +115,7 @@ class WPO_BEWC {
 							$.ajax( {
 								url:  '<?php echo admin_url( 'admin-ajax.php' ); ?>',
 								data: {
-									action:   'wpo-bew-send-emails',
+									action:   'wpo-bew-send-email',
 									order_ids: checked,
 									email:     selected_email,
 									security: '<?= wp_create_nonce( 'wpo-bew' ); ?>'
@@ -138,7 +138,7 @@ class WPO_BEWC {
 		}
 	}
 
-	public function ajax_send_emails() {
+	public function ajax_send_email() {
 		check_ajax_referer( 'wpo-bew', 'security' );
 
 		if ( ! $_POST ) {
@@ -146,7 +146,7 @@ class WPO_BEWC {
 			wp_die();
 		}
 
-		if ( empty( $_POST['action'] || $_POST['action'] != 'wpo-bew-send-emails' ) ) {
+		if ( empty( $_POST['action'] || $_POST['action'] != 'wpo-bew-send-email' ) ) {
 			wp_send_json_error();
 			wp_die();
 		}
