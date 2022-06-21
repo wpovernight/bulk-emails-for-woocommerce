@@ -53,7 +53,7 @@ class WPO_BEWC {
 			?>
 			<div id="wpo_bewc_email_selection" style="display:none;">
 				<select name="wpo_bewc_email_select" style="width:200px;">
-					<option value="-1"><?php esc_html_e( 'Choose an email to send', 'bulk-emails-for-woocommerce' ); ?></option>
+					<option value=""><?php esc_html_e( 'Choose an email to send', 'bulk-emails-for-woocommerce' ); ?></option>
 					<?php
 						$mailer           = WC()->mailer();
 						$available_emails = apply_filters( 'woocommerce_resend_order_emails_available', array( 'new_order', 'cancelled_order', 'customer_processing_order', 'customer_completed_order', 'customer_invoice' ) );
