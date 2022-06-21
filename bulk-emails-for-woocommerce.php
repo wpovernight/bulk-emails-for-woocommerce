@@ -125,7 +125,7 @@ class WPO_BEWC {
 		}
 
 		$redirect_to = add_query_arg( array( 'wpo_bewc' => 'success' ), $redirect_to );
-		return $redirect_to;
+		return esc_url_raw( $redirect_to );
 	}
 	public function send_order_email( $order_id, $email_to_send ) {
 		$order  = wc_get_order( $order_id );
