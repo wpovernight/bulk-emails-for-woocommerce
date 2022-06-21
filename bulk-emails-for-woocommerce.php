@@ -156,7 +156,7 @@ class WPO_BEWC {
 			wp_die();
 		}
 
-		if ( ! function_exists( 'as_schedule_single_action' ) ) {
+		if ( ! function_exists( 'as_enqueue_async_action' ) ) {
 			wp_send_json_error();
 			wp_die();
 		}
@@ -170,7 +170,7 @@ class WPO_BEWC {
 		}
 
 		foreach ( $order_ids as $order_id ) {
-			as_schedule_single_action( strtotime( 'now' ), 'wpo_bewc_schedule_email_sending', compact( 'order_id', 'email_to_send' ) );
+			as_enqueue_async_action( 'wpo_bewc_schedule_email_sending', compact( 'order_id', 'email_to_send' ) );
 		}
 
 		wp_send_json_success();
