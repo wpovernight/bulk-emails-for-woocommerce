@@ -184,8 +184,6 @@ class WPO_BEWC {
 			return;
 		}
 
-		// Switch back to the site locale.
-		wc_switch_to_site_locale();
 		do_action( 'woocommerce_before_resend_order_emails', $order, $email_to_send );
 
 		// Ensure gateways are loaded in case they need to insert data into the emails.
@@ -204,8 +202,6 @@ class WPO_BEWC {
 		}
 
 		do_action( 'woocommerce_after_resend_order_email', $order, $email_to_send );
-		// Restore user locale.
-		wc_restore_locale();
 	}
 
 	public function admin_notices() {
