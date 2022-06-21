@@ -111,13 +111,12 @@ class WPO_BEWC {
 	}
 
 	public function handle_bulk_action( $redirect_to, $action, $ids ) {
-		$ids = apply_filters( 'woocommerce_bulk_action_ids', array_reverse( array_map( 'absint', $ids ) ), $action, 'order' );
-
-		if ( $action != 'wpo_bewc_send_email' || empty( $ids ) || ! is_array( $ids ) || empty( $_REQUEST['wpo_bewc_email_select'] ) ) {
+		if ( $action != 'wpo_bewc_send_email' || empty( $ids ) || ! is_array( $ids ) || empty( $_REQUEST['wpo_bewc_email_select'] ) || ! function_exists( 'as_enqueue_async_action' ) ) {
 			$redirect_to = add_query_arg( array( 'wpo_bewc' => 'error' ), $redirect_to );
 			return esc_url_raw( $redirect_to );
 		}
 
+		$ids           = apply_filters( 'woocommerce_bulk_action_ids', array_reverse( array_map( 'absint', $ids ) ), $action, 'order' );
 		$email_to_send = sanitize_text_field( $_REQUEST['wpo_bewc_email_select'] );
 
 		foreach ( $ids as $order_id ) {
