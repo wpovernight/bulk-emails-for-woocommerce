@@ -31,11 +31,11 @@ class WPO_BEWC {
 	public function __construct() {
 		add_action( 'init', array( $this, 'load_textdomain' ), 10, 1 );
 		add_filter( 'bulk_actions-edit-shop_order', array( $this, 'bulk_actions' ), 16 );
-		add_action( 'admin_footer', array( $this, 'email_selector' ) );
-		add_action( 'wp_ajax_wpo-bew-send-email', array( $this, 'ajax_send_email' ) );
+		add_action( 'load-edit.php', array( $this, 'email_selector' ), -1 );
 		add_action( 'wpo_bewc_schedule_email_sending', array( $this, 'send_order_email' ), 10, 2 );
 		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
 		add_action( 'admin_notices', array( $this, 'need_wc' ) );
+		add_filter( 'handle_bulk_actions-edit-shop_order', array( $this, 'handle_bulk_action' ), 1, 3 );
 	}
 
 	public function load_textdomain() {
@@ -48,13 +48,12 @@ class WPO_BEWC {
 	}
 
 	public function email_selector() {
-		global $post_type;
-
-		if ( $post_type == 'shop_order' && get_current_screen()->id == 'edit-shop_order' ) {
+		if ( isset( $_GET['post_type'] ) && 'shop_order' === $_GET['post_type'] ) {
+			$this->load_scripts();
 			?>
 			<div id="wpo_bewc_email_selection" style="display:none;">
 				<select name="wpo_bewc_email_select" style="width:200px;">
-					<option value=""><?php esc_html_e( 'Choose an email to send', 'bulk-emails-for-woocommerce' ); ?></option>
+					<option value="-1"><?php esc_html_e( 'Choose an email to send', 'bulk-emails-for-woocommerce' ); ?></option>
 					<?php
 						$mailer           = WC()->mailer();
 						$available_emails = apply_filters( 'woocommerce_resend_order_emails_available', array( 'new_order', 'cancelled_order', 'customer_processing_order', 'customer_completed_order', 'customer_invoice' ) );
@@ -69,114 +68,65 @@ class WPO_BEWC {
 					?>
 				</select>
 			</div>
-
-			<script>
-				jQuery( function ( $ ) {
-					$( document ).on( 'change', ".post-type-shop_order select[name='action'], .post-type-shop_order select[name='action2']", function ( e ) {
-						e.preventDefault();
-						let actionSelected = $( this ).val();
-
-						if ( actionSelected == 'wpo_bewc_send_email' ) {
-							$( '#wpo_bewc_email_selection' )
-								.show()
-								.insertAfter( '#wpbody-content .tablenav-pages' )
-								.css( {
-									'display':     'block',
-									'clear':       'left',
-									'padding-top': '6px', 
-								} )
-								.closest( 'body' ).find( '.wp-list-table' ).css( {
-									'margin-top':  '50px',
-								} );
-						} else {
-							$( '#wpo_bewc_email_selection' ).hide().closest( 'body' ).find( '.wp-list-table' ).css( {
-								'margin-top': 'initial',
-							} );
-						}
-					} );
-
-					$( document ).on( 'click', '.post-type-shop_order #doaction, .post-type-shop_order #doaction2', function ( e ) {
-						let actionSelected = $( this ).attr( 'id' ).substr( 2 );
-						let action         = $( 'select[name="'+actionSelected+'"]' ).val();
-
-						if ( action == 'wpo_bewc_send_email' ) {
-							e.preventDefault();
-
-							// Get array of checked orders (order_ids)
-							let checked = [];
-							$( 'tbody th.check-column input[type="checkbox"]:checked' ).each( function () {
-								checked.push( $( this ).val() );
-							} );
-							checked = JSON.stringify( checked ); // convert to JSON
-
-							let selected_email = $( 'select[name="wpo_bewc_email_select"]' ).val();
-
-							// ajax request
-							$.ajax( {
-								url:  '<?php echo admin_url( 'admin-ajax.php' ); ?>',
-								data: {
-									action:   'wpo-bew-send-email',
-									order_ids: checked,
-									email:     selected_email,
-									security: '<?= wp_create_nonce( 'wpo-bew' ); ?>'
-								},
-								type:  'POST',
-								cache: false,
-								success: function( response ) {
-									if ( response.success ) {
-										window.location.replace( window.location.href + "&wpo_bewc=success" );
-									} else {
-										window.location.replace( window.location.href + "&wpo_bewc=error" );
-									}
-								},
-							} );
-						}
-					} );
-				} );
-			</script>
 			<?php
 		}
 	}
 
-	public function ajax_send_email() {
-		check_ajax_referer( 'wpo-bew', 'security' );
+	public function load_scripts() {
+		wc_enqueue_js(
+			"
+			$( document ).on( 'change', '.post-type-shop_order select[name=\"action\"], .post-type-shop_order select[name=\"action2\"]', function ( e ) {
+				e.preventDefault();
+				let actionSelected = $( this ).val();
 
-		if ( ! $_POST ) {
-			wp_send_json_error();
-			wp_die();
+				if ( actionSelected == 'wpo_bewc_send_email' ) {
+					$( '#wpo_bewc_email_selection' )
+						.show()
+						.insertAfter( '#wpbody-content .tablenav-pages' )
+						.css( {
+							'display':     'block',
+							'clear':       'left',
+							'padding-top': '6px', 
+						} )
+						.closest( 'body' ).find( '.wp-list-table' ).css( {
+							'margin-top':  '50px',
+						} );
+				} else {
+					$( '#wpo_bewc_email_selection' ).hide().closest( 'body' ).find( '.wp-list-table' ).css( {
+						'margin-top': 'initial',
+					} );
+				}
+			} );
+
+			$( document ).on( 'change', '#wpo_bewc_email_selection select', function ( e ) {
+				e.preventDefault();
+				let email     = $( this ).val();
+				let selectors = $( this ).closest( 'body' ).find( '#wpo_bewc_email_selection select' );
+				$.each( selectors, function( i, selector ) {
+					$( selector ).val( email );
+				} );
+			} ).trigger( 'change' );
+			"
+		);
+	}
+
+	public function handle_bulk_action( $redirect_to, $action, $ids ) {
+		$ids = apply_filters( 'woocommerce_bulk_action_ids', array_reverse( array_map( 'absint', $ids ) ), $action, 'order' );
+
+		if ( $action != 'wpo_bewc_send_email' || empty( $ids ) || ! is_array( $ids ) || empty( $_REQUEST['wpo_bewc_email_select'] ) ) {
+			$redirect_to = add_query_arg( array( 'wpo_bewc' => 'error' ), $redirect_to );
+			return esc_url_raw( $redirect_to );
 		}
 
-		if ( empty( $_POST['action'] || $_POST['action'] != 'wpo-bew-send-email' ) ) {
-			wp_send_json_error();
-			wp_die();
-		}
+		$email_to_send = sanitize_text_field( $_REQUEST['wpo_bewc_email_select'] );
 
-		if ( empty( $_POST['order_ids'] ) || empty( $_POST['email'] ) ) {
-			wp_send_json_error();
-			wp_die();
-		}
-
-		if ( ! function_exists( 'as_enqueue_async_action' ) ) {
-			wp_send_json_error();
-			wp_die();
-		}
-
-		$email_to_send = sanitize_text_field( $_POST['email'] );
-		$order_ids     = json_decode( stripslashes_deep( $_POST['order_ids'] ) );
-
-		if ( empty( $order_ids ) || ! is_array( $order_ids ) ) {
-			wp_send_json_error();
-			wp_die();
-		}
-
-		foreach ( $order_ids as $order_id ) {
+		foreach ( $ids as $order_id ) {
 			as_enqueue_async_action( 'wpo_bewc_schedule_email_sending', compact( 'order_id', 'email_to_send' ) );
 		}
 
-		wp_send_json_success();
-		wp_die();
+		$redirect_to = add_query_arg( array( 'wpo_bewc' => 'success' ), $redirect_to );
+		return $redirect_to;
 	}
-
 	public function send_order_email( $order_id, $email_to_send ) {
 		$order  = wc_get_order( $order_id );
 
