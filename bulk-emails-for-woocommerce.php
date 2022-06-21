@@ -61,8 +61,8 @@ class WPO_BEWC {
 						$mails            = $mailer->get_emails();
 						if ( ! empty( $mails ) && ! empty( $available_emails ) ) { 
 							foreach ( $mails as $mail ) {
-								if ( in_array( $mail->id, $available_emails ) && 'no' !== $mail->enabled ) {
-									echo '<option value="'.esc_attr( $mail->id ).'">'.esc_html( $mail->title ).'</option>';
+								if ( in_array( $mail->id, $available_emails ) && 'no' !== $mail->is_enabled() ) {
+									echo '<option value="'.esc_attr( $mail->id ).'">'.esc_html( $mail->get_title() ).'</option>';
 								}
 							}
 						}
