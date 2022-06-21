@@ -31,11 +31,11 @@ class WPO_BEWC {
 	public function __construct() {
 		add_action( 'init', array( $this, 'load_textdomain' ), 10, 1 );
 		add_filter( 'bulk_actions-edit-shop_order', array( $this, 'bulk_actions' ), 16 );
-		add_action( 'load-edit.php', array( $this, 'email_selector' ), -1 );
+		add_action( 'load-edit.php', array( $this, 'email_selector' ) );
 		add_action( 'wpo_bewc_schedule_email_sending', array( $this, 'send_order_email' ), 10, 2 );
 		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
 		add_action( 'admin_notices', array( $this, 'need_wc' ) );
-		add_filter( 'handle_bulk_actions-edit-shop_order', array( $this, 'handle_bulk_action' ), 1, 3 );
+		add_filter( 'handle_bulk_actions-edit-shop_order', array( $this, 'handle_bulk_action' ), 10, 3 );
 	}
 
 	public function load_textdomain() {
