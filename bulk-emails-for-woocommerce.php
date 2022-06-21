@@ -105,7 +105,7 @@ class WPO_BEWC {
 							// Get array of checked orders (order_ids)
 							let checked = [];
 							$( 'tbody th.check-column input[type="checkbox"]:checked' ).each( function () {
-									checked.push( $( this ).val() );
+								checked.push( $( this ).val() );
 							} );
 							checked = JSON.stringify( checked ); // convert to JSON
 
