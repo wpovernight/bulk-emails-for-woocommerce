@@ -56,7 +56,7 @@ class WPO_BEWC {
 					<option value=""><?php esc_html_e( 'Choose an email to send', 'bulk-emails-for-woocommerce' ); ?></option>
 					<?php
 						$mailer         = WC()->mailer();
-						$exclude_emails = apply_filters( 'wpo_bew_excluded_wc_emails', array( 'customer_note', 'customer_reset_password', 'customer_new_account' ) );
+						$exclude_emails = apply_filters( 'wpo_bewc_excluded_wc_emails', array( 'customer_note', 'customer_reset_password', 'customer_new_account' ) );
 						$mails          = $mailer->get_emails();
 						if ( ! empty( $mails ) && ! empty( $exclude_emails ) ) { 
 							foreach ( $mails as $mail ) {
@@ -148,6 +148,11 @@ class WPO_BEWC {
 			foreach ( $mails as $mail ) {
 				if ( $mail->id == $email_to_send ) {
 					$mail->trigger( $order->get_id(), $order );
+					$order->add_order_note( sprintf(
+						/* translators: %s: email title */
+						esc_html__( '%s email notification manually sent from bulk actions.', 'bulk-emails-for-woocommerce' ),
+						$mail->get_title() )
+					);
 				}
 			}
 		}
