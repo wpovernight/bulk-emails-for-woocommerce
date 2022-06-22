@@ -18,8 +18,9 @@ defined( 'ABSPATH' ) || exit;
 
 class WPO_BEWC {
 
-	public           $version   = '1.0.0';
-	protected static $_instance = null;
+	public           $version        = '1.0.0';
+	public           $plugin_dir_url = false;
+	protected static $_instance      = null;
 
 	public static function instance() {
 		if ( is_null( self::$_instance ) ) {
@@ -29,6 +30,8 @@ class WPO_BEWC {
 	}
 
 	public function __construct() {
+		$this->plugin_dir_url  = plugin_dir_url( __FILE__ );
+
 		add_action( 'init', array( $this, 'load_textdomain' ), 10, 1 );
 		add_filter( 'bulk_actions-edit-shop_order', array( $this, 'bulk_actions' ), 16 );
 		add_action( 'load-edit.php', array( $this, 'email_selector' ) );
@@ -52,21 +55,26 @@ class WPO_BEWC {
 			$this->load_scripts();
 			?>
 			<div id="wpo_bewc_email_selection" style="display:none;">
-				<select name="wpo_bewc_email_select" style="width:200px;">
-					<option value=""><?php esc_html_e( 'Choose an email to send', 'bulk-emails-for-woocommerce' ); ?></option>
-					<?php
-						$mailer         = WC()->mailer();
-						$exclude_emails = apply_filters( 'wpo_bewc_excluded_wc_emails', array( 'customer_note', 'customer_reset_password', 'customer_new_account' ) );
-						$mails          = $mailer->get_emails();
-						if ( ! empty( $mails ) && ! empty( $exclude_emails ) ) { 
-							foreach ( $mails as $mail ) {
-								if ( ! in_array( $mail->id, $exclude_emails ) && 'no' !== $mail->is_enabled() ) {
-									echo '<option value="'.esc_attr( $mail->id ).'">'.esc_html( $mail->get_title() ).'</option>';
+				<span>
+					<select name="wpo_bewc_email_select" style="width:200px; margin-right:6px;">
+						<option value=""><?php esc_html_e( 'Choose an email to send', 'bulk-emails-for-woocommerce' ); ?></option>
+						<?php
+							$mailer         = WC()->mailer();
+							$exclude_emails = apply_filters( 'wpo_bewc_excluded_wc_emails', array( 'customer_note', 'customer_reset_password', 'customer_new_account' ) );
+							$mails          = $mailer->get_emails();
+							if ( ! empty( $mails ) && ! empty( $exclude_emails ) ) { 
+								foreach ( $mails as $mail ) {
+									if ( ! in_array( $mail->id, $exclude_emails ) && 'no' !== $mail->is_enabled() ) {
+										echo '<option value="'.esc_attr( $mail->id ).'">'.esc_html( $mail->get_title() ).'</option>';
+									}
 								}
 							}
-						}
-					?>
-				</select>
+						?>
+					</select>
+				</span>
+				<span>
+					<img class="wpo-bewc-spinner" src="<?= $this->plugin_dir_url.'/assets/images/spinner.gif'; ?>" alt="spinner" style="display:none;">
+				</span>
 			</div>
 			<?php
 		}
@@ -106,6 +114,14 @@ class WPO_BEWC {
 					$( selector ).val( email );
 				} );
 			} ).trigger( 'change' );
+
+			$( document ).on( 'submit', 'form#posts-filter', function( e ) {
+				if ( $( this ).find( 'select[name=\"action\"]' ).val() == 'wpo_bewc_send_email' && $( this ).find( '#wpo_bewc_email_selection select' ).val().length !== 0 ) {
+					$( this ).find( '#doaction' ).prop( 'disabled', true );
+					$( this ).find( '#doaction2' ).prop( 'disabled', true );
+					$( this ).find( '.wpo-bewc-spinner' ).show(); // show spinner
+				}
+			} );
 			"
 		);
 	}
