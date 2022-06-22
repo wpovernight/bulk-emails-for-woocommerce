@@ -167,12 +167,21 @@ class WPO_BEWC {
 		if ( ! empty( $mails ) ) {
 			foreach ( $mails as $mail ) {
 				if ( $mail->id == $email_to_send ) {
+					if ( $email_to_send == 'new_order' ) {
+						add_filter( 'woocommerce_new_order_email_allows_resend', '__return_true', 1983 );
+					}
+
 					$mail->trigger( $order->get_id(), $order );
+
+					if ( $email_to_send == 'new_order' ) {
+						remove_filter( 'woocommerce_new_order_email_allows_resend', '__return_true', 1983 );
+					}
+
 					$order->add_order_note( sprintf(
 						/* translators: %s: email title */
 						esc_html__( '%s email notification manually sent from bulk actions.', 'bulk-emails-for-woocommerce' ),
-						$mail->get_title() )
-					);
+						$mail->get_title()
+					) );
 				}
 			}
 		}
