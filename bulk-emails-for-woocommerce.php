@@ -55,12 +55,12 @@ class WPO_BEWC {
 				<select name="wpo_bewc_email_select" style="width:200px;">
 					<option value=""><?php esc_html_e( 'Choose an email to send', 'bulk-emails-for-woocommerce' ); ?></option>
 					<?php
-						$mailer           = WC()->mailer();
-						$available_emails = apply_filters( 'woocommerce_resend_order_emails_available', array( 'new_order', 'cancelled_order', 'customer_processing_order', 'customer_completed_order', 'customer_invoice' ) );
-						$mails            = $mailer->get_emails();
-						if ( ! empty( $mails ) && ! empty( $available_emails ) ) { 
+						$mailer         = WC()->mailer();
+						$exclude_emails = apply_filters( 'wpo_bew_excluded_wc_emails', array( 'customer_note', 'customer_reset_password', 'customer_new_account' ) );
+						$mails          = $mailer->get_emails();
+						if ( ! empty( $mails ) && ! empty( $exclude_emails ) ) { 
 							foreach ( $mails as $mail ) {
-								if ( in_array( $mail->id, $available_emails ) && 'no' !== $mail->is_enabled() ) {
+								if ( ! in_array( $mail->id, $exclude_emails ) && 'no' !== $mail->is_enabled() ) {
 									echo '<option value="'.esc_attr( $mail->id ).'">'.esc_html( $mail->get_title() ).'</option>';
 								}
 							}
@@ -126,6 +126,7 @@ class WPO_BEWC {
 		$redirect_to = add_query_arg( array( 'wpo_bewc' => 'success' ), $redirect_to );
 		return esc_url_raw( $redirect_to );
 	}
+
 	public function send_order_email( $order_id, $email_to_send ) {
 		$order  = wc_get_order( $order_id );
 
