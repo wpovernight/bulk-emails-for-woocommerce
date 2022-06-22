@@ -128,7 +128,7 @@ class WPO_BEWC {
 	}
 
 	public function send_order_email( $order_id, $email_to_send ) {
-		$order  = wc_get_order( $order_id );
+		$order = wc_get_order( $order_id );
 
 		if ( empty( $order ) ) {
 			return;
@@ -139,6 +139,7 @@ class WPO_BEWC {
 		// Ensure gateways are loaded in case they need to insert data into the emails.
 		WC()->payment_gateways();
 		WC()->shipping();
+
 		// Load mailer.
 		$mailer = WC()->mailer();
 		$mails  = $mailer->get_emails();
@@ -146,7 +147,15 @@ class WPO_BEWC {
 		if ( ! empty( $mails ) ) {
 			foreach ( $mails as $mail ) {
 				if ( $mail->id == $email_to_send ) {
+					if ( ! is_callable( array( $mail, 'setup_locale' ) ) ) {
+						wc_switch_to_site_locale();
+					}
+
 					$mail->trigger( $order->get_id(), $order );
+					
+					if ( ! is_callable( array( $mail, 'restore_locale' ) ) ) {
+						wc_restore_locale();
+					}
 				}
 			}
 		}
