@@ -127,7 +127,11 @@ class WPO_BEWC {
 	}
 
 	public function handle_bulk_action( $redirect_to, $action, $ids ) {
-		if ( $action != 'wpo_bewc_send_email' || empty( $ids ) || ! is_array( $ids ) || empty( $_REQUEST['wpo_bewc_email_select'] ) || ! function_exists( 'as_enqueue_async_action' ) ) {
+		if ( $action != 'wpo_bewc_send_email' ) {
+			return $redirect_to;
+		}
+
+		if ( empty( $ids ) || ! is_array( $ids ) || empty( $_REQUEST['wpo_bewc_email_select'] ) || ! function_exists( 'as_enqueue_async_action' ) ) {
 			$redirect_to = add_query_arg( array( 'wpo_bewc' => 'error' ), $redirect_to );
 			return esc_url_raw( $redirect_to );
 		}
