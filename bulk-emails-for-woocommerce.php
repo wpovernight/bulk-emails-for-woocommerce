@@ -69,6 +69,15 @@ class WPO_BEWC {
 									}
 								}
 							}
+							// Add Smart Reminder Emails
+							if ( class_exists( 'WPO_WC_Smart_Reminder_Emails' ) ) {
+								$reminder_emails = WPO_WCSRE()->functions->get_emails( null, 'object' );
+								foreach ( $reminder_emails as $email ) {
+									/* translators: email ID */
+									$name = ! empty( $email->name ) ?  $email->name : sprintf( __( 'Untitled reminder (#%s)', 'bulk-emails-for-woocommerce' ), $email->id );
+									echo '<option value="wcsre_' . esc_attr( $email->id ) . '">' . esc_html( $name ) . '</option>';
+								}
+							}
 						?>
 					</select>
 				</span>
@@ -164,7 +173,12 @@ class WPO_BEWC {
 		$mailer = WC()->mailer();
 		$mails  = $mailer->get_emails();
 
-		if ( ! empty( $mails ) ) {
+		// Reminder emails
+		if ( strpos( $email_to_send, 'wcsre_' ) !== false && class_exists( 'WPO_WC_Smart_Reminder_Emails' ) ) {
+			$email_id = str_replace( 'wcsre_', '', $email_to_send );
+			WPO_WCSRE()->functions->send_emails( $order_id, $email_id );
+		// Regular emails
+		} elseif ( ! empty( $mails ) ) {
 			foreach ( $mails as $mail ) {
 				if ( $mail->id == $email_to_send ) {
 					if ( $email_to_send == 'new_order' ) {
