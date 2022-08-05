@@ -74,7 +74,7 @@ class WPO_BEWC {
 								$reminder_emails = WPO_WCSRE()->functions->get_emails( null, 'object' );
 								foreach ( $reminder_emails as $email ) {
 									/* translators: email ID */
-									$name = ! empty( $email->name ) ?  $email->name : sprintf( __( 'Untitled reminder (#%s)', 'bulk-emails-for-woocommerce' ), $email->id );
+									$name = ! empty( $email->name ) ? $email->name : sprintf( __( 'Untitled reminder (#%s)', 'bulk-emails-for-woocommerce' ), $email->id );
 									echo '<option value="wcsre_' . esc_attr( $email->id ) . '">' . esc_html( $name ) . '</option>';
 								}
 							}
