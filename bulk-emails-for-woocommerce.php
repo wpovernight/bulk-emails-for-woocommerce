@@ -167,7 +167,9 @@ class WPO_BEWC {
 
 		// Reminder emails
 		if ( strpos( $email_to_send, 'wcsre_' ) !== false && class_exists( 'WPO_WC_Smart_Reminder_Emails' ) ) {
-			$_REQUEST['action'] = 'wpo_wcsre_send_manual_email'; // set it to be manual email to bypass triggers validation
+			if ( apply_filters( 'wpo_bewc_bypass_reminder_email_triggers', true ) ) {
+				$_REQUEST['action'] = 'wpo_wcsre_send_manual_email'; // set it to be manual email to bypass triggers validation
+			}
 			$email_id           = str_replace( 'wcsre_', '', $email_to_send );
 			WPO_WCSRE()->functions->send_emails( $order_id, $email_id );
 		
