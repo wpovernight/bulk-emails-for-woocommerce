@@ -69,6 +69,15 @@ class WPO_BEWC {
 									}
 								}
 							}
+							// Add Smart Reminder Emails
+							if ( class_exists( 'WPO_WC_Smart_Reminder_Emails' ) ) {
+								$reminder_emails = WPO_WCSRE()->functions->get_emails( null, 'object' );
+								foreach ( $reminder_emails as $email ) {
+									/* translators: email ID */
+									$name = ! empty( $email->name ) ? $email->name : sprintf( __( 'Untitled reminder (#%s)', 'bulk-emails-for-woocommerce' ), $email->id );
+									echo '<option value="wcsre_' . esc_attr( $email->id ) . '">' . esc_html( $name ) . '</option>';
+								}
+							}
 						?>
 					</select>
 				</span>
@@ -156,32 +165,43 @@ class WPO_BEWC {
 
 		do_action( 'woocommerce_before_resend_order_emails', $order, $email_to_send );
 
-		// Ensure gateways are loaded in case they need to insert data into the emails.
-		WC()->payment_gateways();
-		WC()->shipping();
+		// Reminder emails
+		if ( strpos( $email_to_send, 'wcsre_' ) !== false && class_exists( 'WPO_WC_Smart_Reminder_Emails' ) ) {
+			if ( apply_filters( 'wpo_bewc_bypass_reminder_email_triggers', true ) ) {
+				$_REQUEST['action'] = 'wpo_wcsre_send_manual_email'; // set it to be manual email to bypass triggers validation
+			}
+			$email_id = str_replace( 'wcsre_', '', $email_to_send );
+			WPO_WCSRE()->functions->send_emails( $order_id, $email_id );
+		
+		// Regular emails
+		} else {
+			// Ensure gateways are loaded in case they need to insert data into the emails.
+			WC()->payment_gateways();
+			WC()->shipping();
+			
+			// Load mailer.
+			$mailer = WC()->mailer();
+			$mails  = $mailer->get_emails();
 
-		// Load mailer.
-		$mailer = WC()->mailer();
-		$mails  = $mailer->get_emails();
+			if ( ! empty( $mails ) ) {
+				foreach ( $mails as $mail ) {
+					if ( $mail->id == $email_to_send ) {
+						if ( $email_to_send == 'new_order' ) {
+							add_filter( 'woocommerce_new_order_email_allows_resend', '__return_true', 1983 );
+						}
 
-		if ( ! empty( $mails ) ) {
-			foreach ( $mails as $mail ) {
-				if ( $mail->id == $email_to_send ) {
-					if ( $email_to_send == 'new_order' ) {
-						add_filter( 'woocommerce_new_order_email_allows_resend', '__return_true', 1983 );
+						$mail->trigger( $order->get_id(), $order );
+
+						if ( $email_to_send == 'new_order' ) {
+							remove_filter( 'woocommerce_new_order_email_allows_resend', '__return_true', 1983 );
+						}
+
+						$order->add_order_note( sprintf(
+							/* translators: %s: email title */
+							esc_html__( '%s email notification manually sent from bulk actions.', 'bulk-emails-for-woocommerce' ),
+							$mail->get_title()
+						) );
 					}
-
-					$mail->trigger( $order->get_id(), $order );
-
-					if ( $email_to_send == 'new_order' ) {
-						remove_filter( 'woocommerce_new_order_email_allows_resend', '__return_true', 1983 );
-					}
-
-					$order->add_order_note( sprintf(
-						/* translators: %s: email title */
-						esc_html__( '%s email notification manually sent from bulk actions.', 'bulk-emails-for-woocommerce' ),
-						$mail->get_title()
-					) );
 				}
 			}
 		}
