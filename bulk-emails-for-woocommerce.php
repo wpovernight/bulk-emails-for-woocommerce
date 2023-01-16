@@ -3,7 +3,7 @@
  * Plugin Name:          Bulk Emails for WooCommerce
  * Plugin URI:           https://wpovernight.com/
  * Description:          Send emails in bulk for selected order in WooCommerce
- * Version:              1.0.0
+ * Version:              1.1.0
  * Author:               WP Overnight
  * Author URI:           https://wpovernight.com
  * License:              GPLv2 or later
@@ -11,14 +11,14 @@
  * Text Domain:          bulk-emails-for-woocommerce
  * Domain Path:          /languages
  * WC requires at least: 3.3
- * WC tested up to:      6.6
+ * WC tested up to:      7.3
  */
 
 defined( 'ABSPATH' ) || exit;
 
 class WPO_BEWC {
 
-	public           $version        = '1.0.0';
+	public           $version        = '1.1.0';
 	public           $plugin_dir_url = false;
 	protected static $_instance      = null;
 
