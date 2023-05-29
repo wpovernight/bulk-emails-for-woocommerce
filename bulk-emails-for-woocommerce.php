@@ -33,12 +33,19 @@ class WPO_BEWC {
 		$this->plugin_dir_url  = plugin_dir_url( __FILE__ );
 
 		add_action( 'init', array( $this, 'load_textdomain' ), 10, 1 );
-		add_filter( 'bulk_actions-edit-shop_order', array( $this, 'bulk_actions' ), 16 );
 		add_action( 'load-edit.php', array( $this, 'email_selector' ) );
+		add_action( 'admin_head-woocommerce_page_wc-orders', array( $this, 'email_selector' ) ); // WC 7.1+
 		add_action( 'wpo_bewc_schedule_email_sending', array( $this, 'send_order_email' ), 10, 2 );
 		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
 		add_action( 'admin_notices', array( $this, 'need_wc' ) );
+		
+		// HPOS compatibility
+		add_action( 'before_woocommerce_init', array( $this, 'woocommerce_hpos_compatible' ) );
+		
+		add_filter( 'bulk_actions-edit-shop_order', array( $this, 'bulk_actions' ), 16 );
+		add_filter( 'bulk_actions-woocommerce_page_wc-orders', array( $this, 'bulk_actions' ), 16 ); // WC 7.1+
 		add_filter( 'handle_bulk_actions-edit-shop_order', array( $this, 'handle_bulk_action' ), 10, 3 );
+		add_filter( 'handle_bulk_actions-woocommerce_page_wc-orders', array( $this, 'handle_bulk_action' ), 10, 3 ); // WC 7.1+
 	}
 
 	public function load_textdomain() {
@@ -51,7 +58,7 @@ class WPO_BEWC {
 	}
 
 	public function email_selector() {
-		if ( isset( $_GET['post_type'] ) && 'shop_order' === $_GET['post_type'] ) {
+		if ( ( isset( $_REQUEST['post_type'] ) && 'shop_order' == $_REQUEST['post_type'] ) || ( isset( $_REQUEST['page'] ) && 'wc-orders' == $_REQUEST['page'] ) ) {
 			$this->load_scripts();
 			?>
 			<div id="wpo_bewc_email_selection" style="display:none;">
@@ -92,7 +99,7 @@ class WPO_BEWC {
 	public function load_scripts() {
 		wc_enqueue_js(
 			"
-			$( document ).on( 'change', '.post-type-shop_order select[name=\"action\"], .post-type-shop_order select[name=\"action2\"]', function ( e ) {
+			$( document ).on( 'change', '.post-type-shop_order select[name=\"action\"], .post-type-shop_order select[name=\"action2\"], .woocommerce_page_wc-orders select[name=\"action\"], .woocommerce_page_wc-orders select[name=\"action2\"]', function ( e ) {
 				e.preventDefault();
 				let actionSelected = $( this ).val();
 
@@ -252,6 +259,17 @@ class WPO_BEWC {
 			</div>
 			<?php
 			echo wp_kses_post( ob_get_clean() );
+		}
+	}
+	
+	/**
+	 * Declares WooCommerce HPOS compatibility.
+	 *
+	 * @return void
+	 */
+	public function woocommerce_hpos_compatible() {
+		if ( class_exists( '\Automattic\WooCommerce\Utilities\FeaturesUtil' ) ) {
+			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
 		}
 	}
 
