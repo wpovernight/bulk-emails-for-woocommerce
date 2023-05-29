@@ -58,7 +58,7 @@ class WPO_BEWC {
 	}
 
 	public function email_selector() {
-		if ( ( isset( $_REQUEST['post_type'] ) && 'shop_order' == $_REQUEST['post_type'] ) || ( isset( $_REQUEST['page'] ) && 'wc-orders' == isset( $_REQUEST['page'] ) ) ) {
+		if ( ( isset( $_REQUEST['post_type'] ) && 'shop_order' == $_REQUEST['post_type'] ) || ( isset( $_REQUEST['page'] ) && 'wc-orders' == $_REQUEST['page'] ) ) {
 			$this->load_scripts();
 			?>
 			<div id="wpo_bewc_email_selection" style="display:none;">
@@ -102,8 +102,6 @@ class WPO_BEWC {
 			$( document ).on( 'change', '.post-type-shop_order select[name=\"action\"], .post-type-shop_order select[name=\"action2\"], .woocommerce_page_wc-orders select[name=\"action\"], .woocommerce_page_wc-orders select[name=\"action2\"]', function ( e ) {
 				e.preventDefault();
 				let actionSelected = $( this ).val();
-				
-				console.log( 'hurra' );
 
 				if ( actionSelected == 'wpo_bewc_send_email' ) {
 					$( '#wpo_bewc_email_selection' )
