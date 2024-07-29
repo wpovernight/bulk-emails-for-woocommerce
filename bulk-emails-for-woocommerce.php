@@ -66,6 +66,16 @@ class WPO_BEWC {
 				true
 			);
 			
+			wp_localize_script(
+				'wpo-bewc-script',
+				'wpo_bewc',
+				array(
+					'ajaxurl'            => admin_url( 'admin-ajax.php' ),
+					'nonce'              => wp_create_nonce( 'wpo_bewc_nonce' ),
+					'no_orders_selected' => __( 'Please select at least one order.', 'bulk-emails-for-woocommerce' ),
+				)
+			);
+			
 		}
 	}
 

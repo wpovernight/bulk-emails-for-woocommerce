@@ -1,5 +1,5 @@
 jQuery( function( $ ) {
-	
+
 	$( document ).on( 'change', '.post-type-shop_order select[name="action"], .post-type-shop_order select[name="action2"], .woocommerce_page_wc-orders select[name="action"], .woocommerce_page_wc-orders select[name="action2"]', function ( e ) {
 		e.preventDefault();
 		let actionSelected = $( this ).val();
@@ -34,11 +34,18 @@ jQuery( function( $ ) {
 	} ).trigger( 'change' );
 
 	$( document ).on( 'submit', 'form#posts-filter', function( e ) {
+		let hasCheckedOrders = $( this ).find( 'tbody .check-column input[type="checkbox"]:checked' ).length > 0;
+
 		if ( $( this ).find( 'select[name="action"]' ).val() === 'wpo_bewc_send_email' && $( this ).find( '#wpo_bewc_email_selection select' ).val().length !== 0 ) {
+			if ( ! hasCheckedOrders ) {
+				e.preventDefault();
+				alert( wpo_bewc.no_orders_selected );
+				return false;
+			}
 			$( this ).find( '#doaction' ).prop( 'disabled', true );
 			$( this ).find( '#doaction2' ).prop( 'disabled', true );
 			$( this ).find( '.wpo-bewc-spinner' ).show(); // show spinner
 		}
 	} );
-	
+
 } );
