@@ -33,8 +33,8 @@ jQuery( function( $ ) {
 		} );
 	} ).trigger( 'change' );
 
-	$( document ).on( 'submit', 'form#posts-filter', function( e ) {
-		let hasCheckedOrders = $( this ).find( 'tbody .check-column input[type="checkbox"]:checked' ).length > 0;
+	$( document ).on( 'submit', 'form#posts-filter, form#wc-orders-filter', function( e ) {
+		let hasCheckedOrders = $( this ).find( '.wp-list-table .check-column input[type="checkbox"]:checked' ).length > 0;
 
 		if ( $( this ).find( 'select[name="action"]' ).val() === 'wpo_bewc_send_email' && $( this ).find( '#wpo_bewc_email_selection select' ).val().length !== 0 ) {
 			if ( ! hasCheckedOrders ) {

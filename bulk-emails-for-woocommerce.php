@@ -18,9 +18,10 @@ defined( 'ABSPATH' ) || exit;
 
 class WPO_BEWC {
 
-	public           $version        = '1.2.0';
-	public           $plugin_dir_url = false;
-	protected static $_instance      = null;
+	public           $version         = '1.2.0';
+	public           $plugin_dir_url  = false;
+	public           $plugin_dir_path = false;
+	protected static $_instance       = null;
 
 	public static function instance() {
 		if ( is_null( self::$_instance ) ) {
@@ -31,6 +32,7 @@ class WPO_BEWC {
 
 	public function __construct() {
 		$this->plugin_dir_url  = plugin_dir_url( __FILE__ );
+		$this->plugin_dir_path = plugin_dir_path( __FILE__ );
 
 		add_action( 'init', array( $this, 'load_textdomain' ), 10, 1 );
 		add_action( 'admin_enqueue_scripts', array( $this, 'load_assets' ) );
@@ -50,7 +52,7 @@ class WPO_BEWC {
 	}
 
 	public function load_textdomain() {
-		load_plugin_textdomain( 'bulk-emails-for-woocommerce', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+		load_plugin_textdomain( 'bulk-emails-for-woocommerce', false, $this->plugin_dir_path . 'languages' );
 	}
 	
 	public function load_assets() {
