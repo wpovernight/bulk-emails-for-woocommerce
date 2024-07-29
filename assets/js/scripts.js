@@ -34,14 +34,22 @@ jQuery( function( $ ) {
 	} ).trigger( 'change' );
 
 	$( document ).on( 'submit', 'form#posts-filter, form#wc-orders-filter', function( e ) {
-		let hasCheckedOrders = $( this ).find( '.wp-list-table .check-column input[type="checkbox"]:checked' ).length > 0;
+		let emailSelectionEmpty = $( this ).find( '#wpo_bewc_email_selection select' ).val().length === 0;
+		let hasCheckedOrders    = $( this ).find( '.wp-list-table .check-column input[type="checkbox"]:checked' ).length > 0;
 
-		if ( $( this ).find( 'select[name="action"]' ).val() === 'wpo_bewc_send_email' && $( this ).find( '#wpo_bewc_email_selection select' ).val().length !== 0 ) {
+		if ( $( this ).find( 'select[name="action"]' ).val() === 'wpo_bewc_send_email' ) {
+			if ( emailSelectionEmpty ) {
+				e.preventDefault();
+				alert( wpo_bewc.no_email_selected );
+				return false;
+			}
+			
 			if ( ! hasCheckedOrders ) {
 				e.preventDefault();
 				alert( wpo_bewc.no_orders_selected );
 				return false;
 			}
+			
 			$( this ).find( '#doaction' ).prop( 'disabled', true );
 			$( this ).find( '#doaction2' ).prop( 'disabled', true );
 			$( this ).find( '.wpo-bewc-spinner' ).show(); // show spinner

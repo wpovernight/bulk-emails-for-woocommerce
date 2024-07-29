@@ -74,6 +74,7 @@ class WPO_BEWC {
 				array(
 					'ajaxurl'            => admin_url( 'admin-ajax.php' ),
 					'nonce'              => wp_create_nonce( 'wpo_bewc_nonce' ),
+					'no_email_selected'  => __( 'Please select an email to send.', 'bulk-emails-for-woocommerce' ),
 					'no_orders_selected' => __( 'Please select at least one order.', 'bulk-emails-for-woocommerce' ),
 				)
 			);
