@@ -33,6 +33,7 @@ class WPO_BEWC {
 		$this->plugin_dir_url  = plugin_dir_url( __FILE__ );
 
 		add_action( 'init', array( $this, 'load_textdomain' ), 10, 1 );
+		add_action( 'admin_enqueue_scripts', array( $this, 'load_assets' ) );
 		add_action( 'load-edit.php', array( $this, 'email_selector' ) );
 		add_action( 'admin_head-woocommerce_page_wc-orders', array( $this, 'email_selector' ) ); // WC 7.1+
 		add_action( 'wpo_bewc_schedule_email_sending', array( $this, 'send_order_email' ), 10, 2 );
@@ -51,6 +52,22 @@ class WPO_BEWC {
 	public function load_textdomain() {
 		load_plugin_textdomain( 'bulk-emails-for-woocommerce', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 	}
+	
+	public function load_assets() {
+		$screen = get_current_screen();
+		
+		if ( ! is_null( $screen ) && in_array( $screen->id, array( 'shop_order', 'edit-shop_order', 'woocommerce_page_wc-orders' ) ) ) {
+			
+			wp_enqueue_script(
+				'wpo-bewc-script',
+				$this->plugin_dir_url . 'assets/js/scripts.js',
+				array( 'jquery' ),
+				$this->version,
+				true
+			);
+			
+		}
+	}
 
 	public function bulk_actions( $actions ) {
 		$actions['wpo_bewc_send_email'] = __( 'Send email', 'bulk-emails-for-woocommerce' );
@@ -59,7 +76,6 @@ class WPO_BEWC {
 
 	public function email_selector() {
 		if ( ( isset( $_REQUEST['post_type'] ) && 'shop_order' == $_REQUEST['post_type'] ) || ( isset( $_REQUEST['page'] ) && 'wc-orders' == $_REQUEST['page'] ) ) {
-			$this->load_scripts();
 			?>
 			<div id="wpo_bewc_email_selection" style="display:none;">
 				<span>
@@ -89,57 +105,11 @@ class WPO_BEWC {
 					</select>
 				</span>
 				<span>
-					<img class="wpo-bewc-spinner" src="<?= $this->plugin_dir_url.'/assets/images/spinner.gif'; ?>" alt="spinner" style="display:none;">
+					<img class="wpo-bewc-spinner" src="<?php echo $this->plugin_dir_url . '/assets/images/spinner.gif'; ?>" alt="spinner" style="display:none;">
 				</span>
 			</div>
 			<?php
 		}
-	}
-
-	public function load_scripts() {
-		wc_enqueue_js(
-			"
-			$( document ).on( 'change', '.post-type-shop_order select[name=\"action\"], .post-type-shop_order select[name=\"action2\"], .woocommerce_page_wc-orders select[name=\"action\"], .woocommerce_page_wc-orders select[name=\"action2\"]', function ( e ) {
-				e.preventDefault();
-				let actionSelected = $( this ).val();
-
-				if ( actionSelected == 'wpo_bewc_send_email' ) {
-					$( '#wpo_bewc_email_selection' )
-						.show()
-						.insertAfter( '#wpbody-content .tablenav-pages' )
-						.css( {
-							'display':     'block',
-							'clear':       'left',
-							'padding-top': '6px', 
-						} )
-						.closest( 'body' ).find( '.wp-list-table' ).css( {
-							'margin-top':  '50px',
-						} );
-				} else {
-					$( '#wpo_bewc_email_selection' ).hide().closest( 'body' ).find( '.wp-list-table' ).css( {
-						'margin-top': 'initial',
-					} );
-				}
-			} );
-
-			$( document ).on( 'change', '#wpo_bewc_email_selection select', function ( e ) {
-				e.preventDefault();
-				let email     = $( this ).val();
-				let selectors = $( this ).closest( 'body' ).find( '#wpo_bewc_email_selection select' );
-				$.each( selectors, function( i, selector ) {
-					$( selector ).val( email );
-				} );
-			} ).trigger( 'change' );
-
-			$( document ).on( 'submit', 'form#posts-filter', function( e ) {
-				if ( $( this ).find( 'select[name=\"action\"]' ).val() == 'wpo_bewc_send_email' && $( this ).find( '#wpo_bewc_email_selection select' ).val().length !== 0 ) {
-					$( this ).find( '#doaction' ).prop( 'disabled', true );
-					$( this ).find( '#doaction2' ).prop( 'disabled', true );
-					$( this ).find( '.wpo-bewc-spinner' ).show(); // show spinner
-				}
-			} );
-			"
-		);
 	}
 
 	public function handle_bulk_action( $redirect_to, $action, $ids ) {
@@ -230,8 +200,8 @@ class WPO_BEWC {
 
 			ob_start();
 			?>
-			<div class="notice notice-<?= $type; ?>">
-				<p><?= $message; ?></p>
+			<div class="notice notice-<?php echo $type; ?>">
+				<p><?php echo $message; ?></p>
 			</div>
 			<?php
 			echo wp_kses_post( ob_get_clean() );
@@ -255,7 +225,16 @@ class WPO_BEWC {
 			ob_start();
 			?>
 			<div class="notice notice-error">
-				<p><?= sprintf( __( 'Bulk Emails for WooCommerce requires %1$sWooCommerce%2$s to be installed & activated!' , 'bulk-emails-for-woocommerce' ), '<a href="http://wordpress.org/extend/plugins/woocommerce/">', '</a>' ); ?></p>
+				<p>
+					<?php
+						printf(
+							/* translators: %1$s: opening link tag, %2$s: closing link tag */
+							__( 'Bulk Emails for WooCommerce requires %1$sWooCommerce%2$s to be installed & activated!' , 'bulk-emails-for-woocommerce' ),
+							'<a href="http://wordpress.org/extend/plugins/woocommerce/">',
+							'</a>'
+						);
+					?>
+				</p>
 			</div>
 			<?php
 			echo wp_kses_post( ob_get_clean() );
