@@ -117,7 +117,7 @@ class WPO_BEWC {
 					</select>
 				</span>
 				<span>
-					<img class="wpo-bewc-spinner" src="<?php echo $this->plugin_dir_url . '/assets/images/spinner.gif'; ?>" alt="spinner" style="display:none;">
+					<img class="wpo-bewc-spinner" src="<?php echo $this->plugin_dir_url . 'assets/images/spinner.gif'; ?>" alt="spinner" style="display:none;">
 				</span>
 			</div>
 			<?php
