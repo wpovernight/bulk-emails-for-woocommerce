@@ -1,0 +1,74 @@
+# Copyright (C) 2024 WP Overnight
+# This file is distributed under the GPLv2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Bulk Emails for WooCommerce 1.2.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/bulk-emails-for-woocommerce\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2024-07-30T09:57:26+02:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.7.1\n"
+"X-Domain: bulk-emails-for-woocommerce\n"
+
+#. Plugin Name of the plugin
+msgid "Bulk Emails for WooCommerce"
+msgstr ""
+
+#. Plugin URI of the plugin
+msgid "https://wpovernight.com/"
+msgstr ""
+
+#. Description of the plugin
+msgid "Send emails in bulk for selected order in WooCommerce"
+msgstr ""
+
+#. Author of the plugin
+msgid "WP Overnight"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "https://wpovernight.com"
+msgstr ""
+
+#: bulk-emails-for-woocommerce.php:77
+msgid "Please select an email to send."
+msgstr ""
+
+#: bulk-emails-for-woocommerce.php:78
+msgid "Please select at least one order."
+msgstr ""
+
+#: bulk-emails-for-woocommerce.php:86
+msgid "Send email"
+msgstr ""
+
+#: bulk-emails-for-woocommerce.php:96
+msgid "Choose an email to send"
+msgstr ""
+
+#. translators: email ID
+#: bulk-emails-for-woocommerce.php:113
+msgid "Untitled reminder (#%s)"
+msgstr ""
+
+#. translators: %s: email title
+#: bulk-emails-for-woocommerce.php:191
+msgid "%s email notification manually sent from bulk actions."
+msgstr ""
+
+#: bulk-emails-for-woocommerce.php:207
+msgid "An error occurred while processing your bulk email sending request!"
+msgstr ""
+
+#: bulk-emails-for-woocommerce.php:210
+msgid "Your bulk emails are now scheduled to be delivered as soon as possible!"
+msgstr ""
+
+#. translators: %1$s: opening link tag, %2$s: closing link tag
+#: bulk-emails-for-woocommerce.php:245
+msgid "Bulk Emails for WooCommerce requires %1$sWooCommerce%2$s to be installed & activated!"
+msgstr ""
