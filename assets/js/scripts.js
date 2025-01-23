@@ -5,28 +5,33 @@ jQuery( function( $ ) {
 		let actionSelected = $( this ).val();
 
 		if ( 'wpo_bewc_send_email' === actionSelected ) {
-			$( '#wpo_bewc_email_selection' )
+			// Move the element to the correct location if it's not.
+			if ( ! $( '.wpo_bewc_email_selection' ).parent().is( '.tablenav' ) ) {
+				$( '.wpo_bewc_email_selection' )
+					.insertAfter( '#wpbody-content .tablenav-pages' )
+					.css( {
+						'display': 'block',
+						'clear': 'left',
+						'padding-top': '6px',
+					} );
+			}
+
+			$( '.wpo_bewc_email_selection' )
 				.show()
-				.insertAfter( '#wpbody-content .tablenav-pages' )
-				.css( {
-					'display':     'block',
-					'clear':       'left',
-					'padding-top': '6px', 
-				} )
-				.closest( 'body' ).find( '.wp-list-table' ).css( {
-					'margin-top':  '50px',
+				.closest( 'body' ).find( '.tablenav' ).css( {
+					'height':  'auto',
 				} );
 		} else {
-			$( '#wpo_bewc_email_selection' ).hide().closest( 'body' ).find( '.wp-list-table' ).css( {
-				'margin-top': 'initial',
+			$( '.wpo_bewc_email_selection' ).hide().closest( 'body' ).find( '.tablenav' ).css( {
+				'height': 'initial',
 			} );
 		}
 	} );
 
-	$( document ).on( 'change', '#wpo_bewc_email_selection select', function ( e ) {
+	$( document ).on( 'change', '.wpo_bewc_email_selection select', function ( e ) {
 		e.preventDefault();
 		let email     = $( this ).val();
-		let selectors = $( this ).closest( 'body' ).find( '#wpo_bewc_email_selection select' );
+		let selectors = $( this ).closest( 'body' ).find( '.wpo_bewc_email_selection select' );
 		
 		$.each( selectors, function( i, selector ) {
 			$( selector ).val( email );
@@ -34,7 +39,7 @@ jQuery( function( $ ) {
 	} ).trigger( 'change' );
 
 	$( document ).on( 'submit', 'form#posts-filter, form#wc-orders-filter', function( e ) {
-		let emailSelectionEmpty = $( this ).find( '#wpo_bewc_email_selection select' ).val().length === 0;
+		let emailSelectionEmpty = $( this ).find( '.wpo_bewc_email_selection select' ).val().length === 0;
 		let hasCheckedOrders    = $( this ).find( '.wp-list-table .check-column input[type="checkbox"]:checked' ).length > 0;
 
 		if ( $( this ).find( 'select[name="action"]' ).val() === 'wpo_bewc_send_email' ) {

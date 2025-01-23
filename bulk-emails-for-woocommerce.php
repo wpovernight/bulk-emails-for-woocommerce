@@ -90,7 +90,7 @@ class WPO_BEWC {
 	public function email_selector() {
 		if ( ( isset( $_REQUEST['post_type'] ) && 'shop_order' == $_REQUEST['post_type'] ) || ( isset( $_REQUEST['page'] ) && 'wc-orders' == $_REQUEST['page'] ) ) {
 			?>
-			<div id="wpo_bewc_email_selection" style="display:none;">
+			<div class="wpo_bewc_email_selection" style="display:none;">
 				<span>
 					<select name="wpo_bewc_email_select" style="width:200px; margin-right:6px;">
 						<option value=""><?php esc_html_e( 'Choose an email to send', 'bulk-emails-for-woocommerce' ); ?></option>
