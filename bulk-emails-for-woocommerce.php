@@ -1,12 +1,14 @@
 <?php
 /**
  * Plugin Name:          Bulk Emails for WooCommerce
- * Plugin URI:           https://wpovernight.com/
- * Description:          Send emails in bulk for selected order in WooCommerce
+ * Requires Plugins:     woocommerce
+ * Plugin URI:           https://github.com/wpovernight/bulk-emails-for-woocommerce
+ * Description:          Send emails in bulk for selected orders in WooCommerce
  * Version:              1.2.1
+ * Update URI:           https://github.com/wpovernight/bulk-emails-for-woocommerce
  * Author:               WP Overnight
  * Author URI:           https://wpovernight.com
- * License:              GPLv2 or later
+ * License:              GPLv3
  * License URI:          https://opensource.org/licenses/gpl-license.php
  * Text Domain:          bulk-emails-for-woocommerce
  * Domain Path:          /languages
@@ -33,6 +35,8 @@ class WPO_BEWC {
 	public function __construct() {
 		$this->plugin_dir_url  = plugin_dir_url( __FILE__ );
 		$this->plugin_dir_path = plugin_dir_path( __FILE__ );
+		
+		$this->load_updater();
 
 		add_action( 'init', array( $this, 'load_textdomain' ), 10, 1 );
 		add_action( 'admin_enqueue_scripts', array( $this, 'load_assets' ) );
@@ -49,6 +53,26 @@ class WPO_BEWC {
 		add_filter( 'bulk_actions-woocommerce_page_wc-orders', array( $this, 'bulk_actions' ), 16 ); // WC 7.1+
 		add_filter( 'handle_bulk_actions-edit-shop_order', array( $this, 'handle_bulk_action' ), 10, 3 );
 		add_filter( 'handle_bulk_actions-woocommerce_page_wc-orders', array( $this, 'handle_bulk_action' ), 10, 3 ); // WC 7.1+
+	}
+	
+	/**
+	 * Load the GitHub Updater class.
+	 *
+	 * @return void
+	 */
+	private function load_updater(): void {
+		$plugin_file         = basename( $this->plugin_dir_path ) . '/bulk-emails-for-woocommerce.php';
+		$github_updater_file = $this->plugin_dir_path . 'github-updater/GitHubUpdater.php';
+		
+		if ( ! class_exists( '\\WPO\\GitHubUpdater\\GitHubUpdater' ) && file_exists( $github_updater_file ) ) {
+			require_once $github_updater_file;
+		}
+		
+		if ( class_exists( '\\WPO\\GitHubUpdater\\GitHubUpdater' ) ) {
+			$gitHubUpdater = new \WPO\GitHubUpdater\GitHubUpdater( $plugin_file );
+			$gitHubUpdater->setChangelog( 'CHANGELOG.md' );
+			$gitHubUpdater->add();
+		}
 	}
 
 	public function load_textdomain() {
