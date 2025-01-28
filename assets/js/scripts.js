@@ -2,27 +2,26 @@ jQuery( function( $ ) {
 
 	$( document ).on( 'change', '.post-type-shop_order select[name="action"], .post-type-shop_order select[name="action2"], .woocommerce_page_wc-orders select[name="action"], .woocommerce_page_wc-orders select[name="action2"]', function ( e ) {
 		e.preventDefault();
-		let actionSelected = $( this ).val();
+		let actionSelected    = $( this ).val();
+		const $emailSelection = $( '.wpo_bewc_email_selection' );
+
 
 		if ( 'wpo_bewc_send_email' === actionSelected ) {
+
 			// Move the element to the correct location if it's not.
-			if ( ! $( '.wpo_bewc_email_selection' ).parent().is( '.tablenav' ) ) {
-				$( '.wpo_bewc_email_selection' )
-					.insertAfter( '#wpbody-content .tablenav-pages' )
-					.css( {
-						'display': 'block',
-						'clear': 'left',
-						'padding-top': '6px',
-					} );
+			if ( ! $emailSelection.parent().is( '.tablenav' ) ) {
+				$emailSelection.insertAfter( '#wpbody-content .tablenav-pages' ).css( {
+					'display': 'block',
+					'clear': 'left',
+					'padding-top': '6px',
+				} );
 			}
 
-			$( '.wpo_bewc_email_selection' )
-				.show()
-				.closest( 'body' ).find( '.tablenav' ).css( {
-					'height':  'auto',
-				} );
+			$emailSelection.show().closest( 'body' ).find( '.tablenav' ).css( {
+				'height':  'auto',
+			} );
 		} else {
-			$( '.wpo_bewc_email_selection' ).hide().closest( 'body' ).find( '.tablenav' ).css( {
+			$emailSelection.hide().closest( 'body' ).find( '.tablenav' ).css( {
 				'height': 'initial',
 			} );
 		}
