@@ -1,4 +1,4 @@
-# bulk-emails-for-woocommerce# Bulk Emails for WooCommerce
+# Bulk Emails for WooCommerce
 
 The **Bulk Emails for WooCommerce** plugin allows you to send default WooCommerce emails in bulk for selected orders directly from the orders list.
 
