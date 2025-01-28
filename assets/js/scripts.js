@@ -18,7 +18,7 @@ jQuery( function( $ ) {
 			}
 
 			$emailSelection.show().closest( 'body' ).find( '.tablenav' ).css( {
-				'height':  'auto',
+				'height': 'auto',
 			} );
 		} else {
 			$emailSelection.hide().closest( 'body' ).find( '.tablenav' ).css( {
