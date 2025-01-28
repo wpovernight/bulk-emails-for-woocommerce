@@ -11,3 +11,5 @@
 .gitmodules
 composer.json
 composer.lock
+
+!/github-updater/
