@@ -1,5 +1,10 @@
 # Changelog
 
+### v1.2.3 (2025-02-13)
+
+- Fix: issue with the built-in updater
+- WooCommerce tested up to version 9.7
+  
 ### v1.2.2 (2025-01-28)
 
 - Adds Github updater
