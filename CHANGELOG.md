@@ -1,5 +1,10 @@
 # Changelog
 
+### v1.2.4 (2025-05-12)
+
+- Tweak: Updated Github updater to v1.1.4
+- WooCommerce tested up to version 9.8
+
 ### v1.2.3 (2025-02-13)
 
 - Fix: issue with the built-in updater

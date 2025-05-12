@@ -2,16 +2,16 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Bulk Emails for WooCommerce 1.2.3\n"
+"Project-Id-Version: Bulk Emails for WooCommerce 1.2.4\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/bulk-emails-for-woocommerce\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-02-13T12:24:03+00:00\n"
+"POT-Creation-Date: 2025-05-12T16:03:53+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.11.0\n"
+"X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: bulk-emails-for-woocommerce\n"
 
 #. Plugin Name of the plugin
@@ -57,11 +57,13 @@ msgstr ""
 
 #. translators: email ID
 #: bulk-emails-for-woocommerce.php:137
+#, php-format
 msgid "Untitled reminder (#%s)"
 msgstr ""
 
 #. translators: %s: email title
 #: bulk-emails-for-woocommerce.php:215
+#, php-format
 msgid "%s email notification manually sent from bulk actions."
 msgstr ""
 
@@ -75,5 +77,6 @@ msgstr ""
 
 #. translators: %1$s: opening link tag, %2$s: closing link tag
 #: bulk-emails-for-woocommerce.php:269
+#, php-format
 msgid "Bulk Emails for WooCommerce requires %1$sWooCommerce%2$s to be installed & activated!"
 msgstr ""
