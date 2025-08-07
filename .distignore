@@ -1,15 +1,40 @@
-/.wordpress-org/*
-/.git/*
-/.github/*
-/node_modules/*
-/*/.git
-/*/.github
-
-.distignore
+# Git-related
+.git*
+.github*
+**/.git*
+**/.github*
 .gitignore
 .gitattributes
 .gitmodules
+.gitkeep
+
+# Node and composer
+node_modules/
 composer.json
 composer.lock
+package.json
+package-lock.json
+yarn.lock
 
-!/github-updater/
+# WordPress.org and build config
+.wordpress-org/
+.distignore
+
+# Development files/tools
+phpcs.xml
+phpstan.neon
+phpunit.xml
+.editorconfig
+.env
+.vscode/
+tests/
+
+# macOS metadata
+.DS_Store
+
+# Other tools
+*.phar
+*.sh
+
+# Docs
+strauss.md
