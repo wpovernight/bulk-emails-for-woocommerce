@@ -124,10 +124,10 @@ class WPO_BEWC {
 						$mailer         = WC()->mailer();
 						$exclude_emails = apply_filters( 'wpo_bewc_excluded_wc_emails', array( 'customer_note', 'customer_reset_password', 'customer_new_account' ) );
 						$mails          = $mailer->get_emails();
-						if ( ! empty( $mails ) && ! empty( $exclude_emails ) ) { 
+						if ( ! empty( $mails ) ) {
 							foreach ( $mails as $mail ) {
-								if ( ! in_array( $mail->id, $exclude_emails ) && 'no' !== $mail->is_enabled() ) {
-									echo '<option value="'.esc_attr( $mail->id ).'">'.esc_html( $mail->get_title() ).'</option>';
+								if ( ( empty( $exclude_emails ) || ! in_array( $mail->id, $exclude_emails ) ) && 'no' !== $mail->is_enabled() ) {
+									echo '<option value="' . esc_attr( $mail->id ) . '">' . esc_html( $mail->get_title() ) . '</option>';
 								}
 							}
 						}
@@ -135,8 +135,11 @@ class WPO_BEWC {
 						if ( class_exists( 'WPO_WC_Smart_Reminder_Emails' ) ) {
 							$reminder_emails = WPO_WCSRE()->functions->get_emails( null, 'object' );
 							foreach ( $reminder_emails as $email ) {
-								/* translators: email ID */
-								$name = ! empty( $email->name ) ? $email->name : sprintf( __( 'Untitled reminder (#%s)', 'bulk-emails-for-woocommerce' ), $email->id );
+								$name = ! empty( $email->name ) ? $email->name : sprintf(
+									/* translators: %s: email ID */
+									__( 'Untitled reminder (#%s)', 'bulk-emails-for-woocommerce' ),
+									$email->id
+								);
 								echo '<option value="wcsre_' . esc_attr( $email->id ) . '">' . esc_html( $name ) . '</option>';
 							}
 						}
@@ -144,7 +147,7 @@ class WPO_BEWC {
 				</select>
 			</span>
 			<span>
-				<img class="wpo-bewc-spinner" src="<?php echo $this->plugin_dir_url . 'assets/images/spinner.gif'; ?>" alt="spinner" style="display:none;">
+				<img class="wpo-bewc-spinner" src="<?php echo esc_url( $this->plugin_dir_url ) . 'assets/images/spinner.gif'; ?>" alt="spinner" style="display:none;">
 			</span>
 		</div>
 		<?php
