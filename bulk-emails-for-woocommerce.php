@@ -112,6 +112,10 @@ class WPO_BEWC {
 	}
 
 	public function email_selector( $post_type, $which ) {
+		if ( 'top' !== $which ) {
+			return;
+		}
+
 		if ( 'shop_order' !== $post_type && ( ! isset( $_REQUEST['page'] ) || 'wc-orders' !== $_REQUEST['page'] ) ) {
 			return;
 		}
@@ -122,11 +126,11 @@ class WPO_BEWC {
 					<option value=""><?php esc_html_e( 'Choose an email to send', 'bulk-emails-for-woocommerce' ); ?></option>
 					<?php
 						$mailer         = WC()->mailer();
-						$exclude_emails = apply_filters( 'wpo_bewc_excluded_wc_emails', array( 'customer_note', 'customer_reset_password', 'customer_new_account' ) );
+						$exclude_emails = (array) apply_filters( 'wpo_bewc_excluded_wc_emails', array( 'customer_note', 'customer_reset_password', 'customer_new_account' ) );
 						$mails          = $mailer->get_emails();
 						if ( ! empty( $mails ) ) {
 							foreach ( $mails as $mail ) {
-								if ( ( empty( $exclude_emails ) || ! in_array( $mail->id, $exclude_emails ) ) && 'no' !== $mail->is_enabled() ) {
+								if ( ( empty( $exclude_emails ) || ! in_array( $mail->id, $exclude_emails, true ) ) && 'no' !== $mail->is_enabled() ) {
 									echo '<option value="' . esc_attr( $mail->id ) . '">' . esc_html( $mail->get_title() ) . '</option>';
 								}
 							}
@@ -147,7 +151,7 @@ class WPO_BEWC {
 				</select>
 			</span>
 			<span>
-				<img class="wpo-bewc-spinner" src="<?php echo esc_url( $this->plugin_dir_url ) . 'assets/images/spinner.gif'; ?>" alt="spinner" style="display:none;">
+				<img class="wpo-bewc-spinner" src="<?php echo esc_url( $this->plugin_dir_url . 'assets/images/spinner.gif' ); ?>" alt="spinner" style="display:none;">
 			</span>
 		</div>
 		<?php
