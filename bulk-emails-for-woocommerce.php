@@ -13,7 +13,7 @@
  * Text Domain:          bulk-emails-for-woocommerce
  * Domain Path:          /languages
  * WC requires at least: 3.3
- * WC tested up to:      9.8
+ * WC tested up to:      10.7
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -40,8 +40,8 @@ class WPO_BEWC {
 
 		add_action( 'init', array( $this, 'load_textdomain' ), 10, 1 );
 		add_action( 'admin_enqueue_scripts', array( $this, 'load_assets' ) );
-		add_action( 'load-edit.php', array( $this, 'email_selector' ) );
-		add_action( 'admin_head-woocommerce_page_wc-orders', array( $this, 'email_selector' ) ); // WC 7.1+
+		add_action( 'restrict_manage_posts', array( $this, 'email_selector' ), 25, 2 );
+		add_action( 'woocommerce_order_list_table_restrict_manage_orders', array( $this, 'email_selector' ), 25, 2 ); // WC 7.3+
 		add_action( 'wpo_bewc_schedule_email_sending', array( $this, 'send_order_email' ), 10, 2 );
 		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
 		add_action( 'admin_notices', array( $this, 'need_wc' ) );
@@ -111,42 +111,50 @@ class WPO_BEWC {
 		return $actions;
 	}
 
-	public function email_selector() {
-		if ( ( isset( $_REQUEST['post_type'] ) && 'shop_order' == $_REQUEST['post_type'] ) || ( isset( $_REQUEST['page'] ) && 'wc-orders' == $_REQUEST['page'] ) ) {
-			?>
-			<div class="wpo_bewc_email_selection" style="display:none;">
-				<span>
-					<select name="wpo_bewc_email_select" style="width:200px; margin-right:6px;">
-						<option value=""><?php esc_html_e( 'Choose an email to send', 'bulk-emails-for-woocommerce' ); ?></option>
-						<?php
-							$mailer         = WC()->mailer();
-							$exclude_emails = apply_filters( 'wpo_bewc_excluded_wc_emails', array( 'customer_note', 'customer_reset_password', 'customer_new_account' ) );
-							$mails          = $mailer->get_emails();
-							if ( ! empty( $mails ) && ! empty( $exclude_emails ) ) { 
-								foreach ( $mails as $mail ) {
-									if ( ! in_array( $mail->id, $exclude_emails ) && 'no' !== $mail->is_enabled() ) {
-										echo '<option value="'.esc_attr( $mail->id ).'">'.esc_html( $mail->get_title() ).'</option>';
-									}
-								}
-							}
-							// Add Smart Reminder Emails
-							if ( class_exists( 'WPO_WC_Smart_Reminder_Emails' ) ) {
-								$reminder_emails = WPO_WCSRE()->functions->get_emails( null, 'object' );
-								foreach ( $reminder_emails as $email ) {
-									/* translators: email ID */
-									$name = ! empty( $email->name ) ? $email->name : sprintf( __( 'Untitled reminder (#%s)', 'bulk-emails-for-woocommerce' ), $email->id );
-									echo '<option value="wcsre_' . esc_attr( $email->id ) . '">' . esc_html( $name ) . '</option>';
-								}
-							}
-						?>
-					</select>
-				</span>
-				<span>
-					<img class="wpo-bewc-spinner" src="<?php echo $this->plugin_dir_url . 'assets/images/spinner.gif'; ?>" alt="spinner" style="display:none;">
-				</span>
-			</div>
-			<?php
+	public function email_selector( $post_type, $which ) {
+		if ( 'top' !== $which ) {
+			return;
 		}
+
+		if ( 'shop_order' !== $post_type && ( ! isset( $_REQUEST['page'] ) || 'wc-orders' !== $_REQUEST['page'] ) ) {
+			return;
+		}
+		?>
+		<div class="wpo_bewc_email_selection" style="display:none;">
+			<span>
+				<select name="wpo_bewc_email_select" style="width:200px; margin-right:6px;">
+					<option value=""><?php esc_html_e( 'Choose an email to send', 'bulk-emails-for-woocommerce' ); ?></option>
+					<?php
+						$mailer         = WC()->mailer();
+						$exclude_emails = (array) apply_filters( 'wpo_bewc_excluded_wc_emails', array( 'customer_note', 'customer_reset_password', 'customer_new_account' ) );
+						$mails          = $mailer->get_emails();
+						if ( ! empty( $mails ) ) {
+							foreach ( $mails as $mail ) {
+								if ( ( empty( $exclude_emails ) || ! in_array( $mail->id, $exclude_emails, true ) ) && 'no' !== $mail->is_enabled() ) {
+									echo '<option value="' . esc_attr( $mail->id ) . '">' . esc_html( $mail->get_title() ) . '</option>';
+								}
+							}
+						}
+						// Add Smart Reminder Emails
+						if ( class_exists( 'WPO_WC_Smart_Reminder_Emails' ) ) {
+							$reminder_emails = WPO_WCSRE()->functions->get_emails( null, 'object' );
+							foreach ( $reminder_emails as $email ) {
+								$name = ! empty( $email->name ) ? $email->name : sprintf(
+									/* translators: %s: email ID */
+									__( 'Untitled reminder (#%s)', 'bulk-emails-for-woocommerce' ),
+									$email->id
+								);
+								echo '<option value="wcsre_' . esc_attr( $email->id ) . '">' . esc_html( $name ) . '</option>';
+							}
+						}
+					?>
+				</select>
+			</span>
+			<span>
+				<img class="wpo-bewc-spinner" src="<?php echo esc_url( $this->plugin_dir_url . 'assets/images/spinner.gif' ); ?>" alt="spinner" style="display:none;">
+			</span>
+		</div>
+		<?php
 	}
 
 	public function handle_bulk_action( $redirect_to, $action, $ids ) {
