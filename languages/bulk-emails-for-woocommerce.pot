@@ -1,15 +1,15 @@
-# Copyright (C) 2025 WP Overnight
+# Copyright (C) 2026 WP Overnight
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Bulk Emails for WooCommerce 1.2.4\n"
+"Project-Id-Version: Bulk Emails for WooCommerce 1.2.5\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/bulk-emails-for-woocommerce\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-05-12T16:03:53+00:00\n"
+"POT-Creation-Date: 2026-06-18T11:16:47+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: bulk-emails-for-woocommerce\n"
@@ -51,32 +51,32 @@ msgstr ""
 msgid "Send email"
 msgstr ""
 
-#: bulk-emails-for-woocommerce.php:120
+#: bulk-emails-for-woocommerce.php:126
 msgid "Choose an email to send"
 msgstr ""
 
-#. translators: email ID
-#: bulk-emails-for-woocommerce.php:137
+#. translators: %s: email ID
+#: bulk-emails-for-woocommerce.php:144
 #, php-format
 msgid "Untitled reminder (#%s)"
 msgstr ""
 
 #. translators: %s: email title
-#: bulk-emails-for-woocommerce.php:215
+#: bulk-emails-for-woocommerce.php:223
 #, php-format
 msgid "%s email notification manually sent from bulk actions."
 msgstr ""
 
-#: bulk-emails-for-woocommerce.php:231
+#: bulk-emails-for-woocommerce.php:239
 msgid "An error occurred while processing your bulk email sending request!"
 msgstr ""
 
-#: bulk-emails-for-woocommerce.php:234
+#: bulk-emails-for-woocommerce.php:242
 msgid "Your bulk emails are now scheduled to be delivered as soon as possible!"
 msgstr ""
 
 #. translators: %1$s: opening link tag, %2$s: closing link tag
-#: bulk-emails-for-woocommerce.php:269
+#: bulk-emails-for-woocommerce.php:277
 #, php-format
 msgid "Bulk Emails for WooCommerce requires %1$sWooCommerce%2$s to be installed & activated!"
 msgstr ""

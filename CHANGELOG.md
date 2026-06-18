@@ -1,5 +1,10 @@
 # Changelog
 
+### v1.2.5 (2026-06-18)
+
+- Fix: WC 10.x layout breakage by using correct hooks for email selector
+- WooCommerce tested up to version 10.9
+
 ### v1.2.4 (2025-05-12)
 
 - Tweak: Updated Github updater to v1.1.4
